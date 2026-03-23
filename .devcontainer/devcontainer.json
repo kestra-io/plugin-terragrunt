@@ -1,10 +1,10 @@
 {
-  "name": "plugin-template",
+  "name": "plugin-terragrunt",
   "build": {
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "workspaceFolder": "/workspaces/plugin-template",
+  "workspaceFolder": "/workspaces/plugin-terragrunt",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {

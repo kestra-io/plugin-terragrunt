@@ -1,0 +1,8 @@
+group: io.kestra.plugin.terragrunt
+name: "cli"
+title: "Cli"
+description: "Tasks that execute Terragrunt CLI operations."
+body: "Set working directory, env vars, backend config, and command arguments to run Terragrunt init/plan/apply/destroy from Kestra, capturing stdout/stderr and plan outputs."
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
