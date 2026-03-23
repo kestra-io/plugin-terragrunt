@@ -25,25 +25,27 @@ class TerragruntCLITest {
     private RunContextFactory runContextFactory;
 
     @Test
-    @SuppressWarnings("unchecked")
     void run() throws Exception {
-        String environmentKey = "MY_KEY";
-        String environmentValue = "MY_VALUE";
+        var environmentKey = "MY_KEY";
+        var environmentValue = "MY_VALUE";
 
-        TerragruntCLI.TerragruntCLIBuilder<?, ?> builder = TerragruntCLI.builder()
+        var builder = TerragruntCLI.builder()
             .id(IdUtils.create())
             .type(TerragruntCLI.class.getName())
             .commands(Property.ofValue(List.of("terragrunt --version")));
 
-        TerragruntCLI runner = builder.build();
+        var runner = builder.build();
 
-        RunContext runContext = TestsUtils.mockRunContext(runContextFactory, runner, Map.of("environmentKey", environmentKey, "environmentValue", environmentValue));
+        var runContext = TestsUtils.mockRunContext(runContextFactory, runner, Map.of(
+            "environmentKey", environmentKey,
+            "environmentValue", environmentValue
+        ));
 
         ScriptOutput scriptOutput = runner.run(runContext);
         assertThat(scriptOutput.getExitCode(), is(0));
 
         runner = builder
-            .env(Map.of("{{ inputs.environmentKey }}", "{{ inputs.environmentValue }}"))
+            .env(Property.ofValue(Map.of(environmentKey, environmentValue)))
             .commands(
                 Property.ofValue(
                     List.of(

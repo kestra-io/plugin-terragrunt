@@ -1,20 +1,18 @@
 package io.kestra.plugin.terragrunt.cli;
 
-import java.util.*;
+import java.util.List;
 
+import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
-import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
-import io.kestra.core.models.tasks.*;
-import io.kestra.core.models.tasks.runners.TaskRunner;
+import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
+import io.kestra.plugin.scripts.exec.AbstractExecScript;
+import io.kestra.plugin.scripts.exec.scripts.models.DockerOptions;
 import io.kestra.plugin.scripts.exec.scripts.models.ScriptOutput;
-import io.kestra.plugin.scripts.exec.scripts.runners.CommandsWrapper;
-import io.kestra.plugin.scripts.runner.docker.Docker;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -90,14 +88,11 @@ import lombok.experimental.SuperBuilder;
         )
     }
 )
-public class TerragruntCLI extends Task implements RunnableTask<ScriptOutput>, NamespaceFilesInterface, InputFilesInterface, OutputFilesInterface {
+public class TerragruntCLI extends AbstractExecScript implements RunnableTask<ScriptOutput> {
     private static final String DEFAULT_IMAGE = "alpine/terragrunt";
 
-    @Schema(
-        title = "Pre-run setup commands",
-        description = "Commands executed before `commands`, typically `terragrunt init`."
-    )
-    protected Property<List<String>> beforeCommands;
+    @Builder.Default
+    protected Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
 
     @Schema(
         title = "Primary Terragrunt CLI commands",
@@ -106,52 +101,22 @@ public class TerragruntCLI extends Task implements RunnableTask<ScriptOutput>, N
     @NotNull
     protected Property<List<String>> commands;
 
-    @Schema(
-        title = "Environment variables for commands",
-        description = "Extra variables passed to the process; use for provider credentials and configuration."
-    )
-    @PluginProperty(
-        additionalProperties = String.class,
-        dynamic = true
-    )
-    protected Map<String, String> env;
-
-    @Schema(
-        title = "The task runner to use.",
-        description = "Task runners are provided by plugins, each have their own properties."
-    )
-    @PluginProperty
-    @Builder.Default
-    @Valid
-    private TaskRunner<?> taskRunner = Docker.instance();
-
-    @Schema(
-        title = "Task runner container image",
-        description = "Used only when the task runner is container-based; defaults to `alpine/terragrunt`."
-    )
-    @Builder.Default
-    private Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
-
-    private NamespaceFiles namespaceFiles;
-
-    private Object inputFiles;
-
-    private Property<List<String>> outputFiles;
+    @Override
+    protected DockerOptions injectDefaults(RunContext runContext, DockerOptions original) throws IllegalVariableEvaluationException {
+        var builder = original.toBuilder();
+        if (original.getImage() == null) {
+            builder.image(runContext.render(this.getContainerImage()).as(String.class).orElse(null));
+        }
+        return builder.build();
+    }
 
     @Override
     public ScriptOutput run(RunContext runContext) throws Exception {
-        var renderedOutputFiles = runContext.render(this.outputFiles).asList(String.class);
-        return new CommandsWrapper(runContext)
-            .withWarningOnStdErr(true)
-            .withTaskRunner(this.taskRunner)
-            .withContainerImage(runContext.render(this.containerImage).as(String.class).orElse(null))
-            .withEnv(Optional.ofNullable(this.env != null ? runContext.renderMap(this.env) : null).orElse(new HashMap<>()))
-            .withNamespaceFiles(namespaceFiles)
-            .withInputFiles(inputFiles)
-            .withOutputFiles(renderedOutputFiles.isEmpty() ? null : renderedOutputFiles)
-            .withInterpreter(Property.ofValue(List.of("/bin/sh", "-c")))
-            .withBeforeCommands(this.beforeCommands)
-            .withCommands(this.commands)
+        return this.commands(runContext)
+            .withInterpreter(interpreter)
+            .withBeforeCommands(beforeCommands)
+            .withBeforeCommandsWithOptions(true)
+            .withCommands(commands)
             .run();
     }
 }
