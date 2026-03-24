@@ -1,6 +1,6 @@
 group: io.kestra.plugin.terragrunt
 name: "cli"
-title: "Cli"
+title: "Terragrunt CLI"
 description: "Tasks that run Terragrunt CLI commands to init, plan, apply, and destroy infrastructure."
 body: "Run Terragrunt commands inside a container with support for input files, output files, environment variables, and remote state backends such as S3, GCS, or Terraform Cloud."
 videos: []
