@@ -50,9 +50,9 @@ import lombok.experimental.SuperBuilder;
                           - terragrunt init
                         inputFiles:
                           terraform.tfvars: |
-                            username            = "cicd"
-                            password            = "{{ secret('CI_CD_PASSWORD') }}"
-                            hostname            = "https://demo.kestra.io"
+                            username = "cicd"
+                            password = "{{ secret('CI_CD_PASSWORD') }}"
+                            hostname = "https://demo.kestra.io"
                         outputFiles:
                           - "*.txt"
                         commands:
