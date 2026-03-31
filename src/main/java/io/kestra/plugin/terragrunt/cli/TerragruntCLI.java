@@ -32,7 +32,7 @@ import lombok.experimental.SuperBuilder;
             title = "Initialize Terragrunt, then create and apply the plan",
             full = true,
             code = """
-                id: git-terragrunt
+                id: git_terragrunt
                 namespace: company.team
 
                 tasks:
@@ -68,7 +68,7 @@ import lombok.experimental.SuperBuilder;
             title = "Pin Terragrunt version and run validate then plan",
             full = true,
             code = """
-                id: terragrunt-plan-only
+                id: terragrunt_plan_only
                 namespace: company.team
 
                 tasks:
