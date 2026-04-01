@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Schema(
     title = "Run Terragrunt CLI commands in Docker",
-    description = "Executes Terragrunt commands inside the task runner container. Defaults to the `alpine/terragrunt` image and assumes a remote state backend such as S3, GCS, or Terraform Cloud."
+    description = "Executes Terragrunt commands inside the task runner container. Defaults to the `alpine/terragrunt` image. For production use, configure a remote state backend such as S3, GCS, or Terraform Cloud."
 )
 @Plugin(
     examples = {
@@ -36,12 +36,12 @@ import lombok.experimental.SuperBuilder;
                 namespace: company.team
 
                 tasks:
-                  - id: git
+                  - id: working_dir
                     type: io.kestra.plugin.core.flow.WorkingDirectory
                     tasks:
                       - id: clone_repository
                         type: io.kestra.plugin.git.Clone
-                        url: https://github.com/anna-geller/kestra-ci-cd
+                        url: https://github.com/your-org/your-repo
                         branch: main
 
                       - id: terragrunt
@@ -77,6 +77,14 @@ import lombok.experimental.SuperBuilder;
                     containerImage: alpine/terragrunt:1.10.3
                     beforeCommands:
                       - terragrunt init -input=false
+                    inputFiles:
+                      terragrunt.hcl: |
+                        terraform {}
+                      main.tf: |
+                        resource "local_file" "example" {
+                          content  = "hello"
+                          filename = "output.txt"
+                        }
                     commands:
                       - terragrunt validate -no-color
                       - terragrunt plan -input=false -no-color -out=tfplan
@@ -91,6 +99,10 @@ import lombok.experimental.SuperBuilder;
 public class TerragruntCLI extends AbstractExecScript implements RunnableTask<ScriptOutput> {
     private static final String DEFAULT_IMAGE = "alpine/terragrunt";
 
+    @Schema(
+        title = "Terragrunt Docker image",
+        description = "Defaults to `alpine/terragrunt`. Pin a specific version tag for reproducible builds, e.g. `alpine/terragrunt:1.10.3`."
+    )
     @Builder.Default
     protected Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
 
