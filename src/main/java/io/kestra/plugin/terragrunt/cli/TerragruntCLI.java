@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -104,6 +105,7 @@ public class TerragruntCLI extends AbstractExecScript implements RunnableTask<Sc
         description = "Defaults to `alpine/terragrunt`. Pin a specific version tag for reproducible builds, e.g. `alpine/terragrunt:1.10.3`."
     )
     @Builder.Default
+    @PluginProperty(group = "execution")
     protected Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
 
     @Schema(
@@ -111,6 +113,7 @@ public class TerragruntCLI extends AbstractExecScript implements RunnableTask<Sc
         description = "Main commands run with `/bin/sh -c`, e.g., `terragrunt plan` or `terragrunt apply -auto-approve`."
     )
     @NotNull
+    @PluginProperty(group = "main")
     protected Property<List<String>> commands;
 
     @Override
