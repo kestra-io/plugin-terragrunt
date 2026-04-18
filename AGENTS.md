@@ -2,11 +2,13 @@
 
 ## What
 
-description = 'Plugin template for Kestra Exposes 1 plugin components (tasks, triggers, and/or conditions).
+- Provides plugin components under `io.kestra.plugin.terragrunt.cli`.
+- Includes classes such as `TerragruntCLI`.
 
 ## Why
 
-Enables Kestra workflows to interact with Template, allowing orchestration of Template-based operations as part of data pipelines and automation workflows.
+- This plugin integrates Kestra with Terragrunt CLI.
+- It provides tasks that run Terragrunt CLI commands to init, plan, apply, and destroy infrastructure.
 
 ## How
 
@@ -34,24 +36,11 @@ plugin-template/
 └── README.md
 ```
 
-### Important Commands
+## Local rules
 
-```bash
-# Build the plugin
-./gradlew shadowJar
+- Base the wording on the implemented packages and classes, not on template README text.
 
-# Run tests
-./gradlew test
+## References
 
-# Build without tests
-./gradlew shadowJar -x test
-```
-
-### Configuration
-
-All tasks and triggers accept standard Kestra plugin properties. Credentials should use
-`{{ secret('SECRET_NAME') }}` — never hardcode real values.
-
-## Agents
-
-**IMPORTANT:** This is a Kestra plugin repository (prefixed by `plugin-`, `storage-`, or `secret-`). You **MUST** delegate all coding tasks to the `kestra-plugin-developer` agent. Do NOT implement code changes directly — always use this agent.
+- https://kestra.io/docs/plugin-developer-guide
+- https://kestra.io/docs/plugin-developer-guide/contribution-guidelines
