@@ -1,4 +1,4 @@
-group: io.kestra.plugin.terragrunt
+group: io.kestra.plugin.terragrunt.cli
 name: "cli"
 title: "Terragrunt CLI"
 description: "Tasks that run Terragrunt CLI commands to init, plan, apply, and destroy infrastructure."
