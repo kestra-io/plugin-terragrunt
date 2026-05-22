@@ -1,4 +1,5 @@
 @PluginSubGroup(
+    title = "Terragrunt CLI",
     description = "Tasks that run Terragrunt CLI commands to init, plan, apply, and destroy infrastructure.",
     categories = {
         PluginSubGroup.PluginCategory.INFRASTRUCTURE
